@@ -64,6 +64,10 @@ export default function PassportPage() {
   const [editGithub, setEditGithub] = useState("");
   const [editLinkedin, setEditLinkedin] = useState("");
 
+  // Share modal state
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   // Claims form state
   const [claimHackathon, setClaimHackathon] = useState("");
   const [claimResult, setClaimResult] = useState("");
@@ -450,14 +454,11 @@ export default function PassportPage() {
                     @{p.handle}
                   </span>
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert("Link copied to clipboard!");
-                    }}
+                    onClick={() => setShowShareModal(true)}
                     className="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all"
                   >
-                    <span className="material-symbols-outlined text-sm">content_copy</span>
-                    Copy Link
+                    <span className="material-symbols-outlined text-sm">share</span>
+                    Share
                   </button>
                   {isOwnProfile && (
                     <button
@@ -784,6 +785,119 @@ export default function PassportPage() {
           </div>
         </div>
       </div>
+
+      {/* Share Modal (YouTube-style) */}
+      {showShareModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm"
+          onClick={() => { setShowShareModal(false); setCopied(false); }}
+        >
+          <div
+            className="bg-surface-container-high max-w-md w-full rounded-2xl shadow-2xl border border-outline-variant/20 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-4">
+              <h3 className="font-headline text-lg font-bold text-on-surface">Share</h3>
+              <button
+                onClick={() => { setShowShareModal(false); setCopied(false); }}
+                className="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined text-on-surface-variant text-xl">close</span>
+              </button>
+            </div>
+
+            {/* Social buttons */}
+            <div className="px-6 pb-5">
+              <div className="flex justify-center gap-5 mb-6">
+                {[
+                  {
+                    name: "X",
+                    icon: "X",
+                    color: "bg-white/10 hover:bg-white/20 text-white",
+                    href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                      `Check out ${p.displayName || p.handle}'s Builder Passport on Monad!\n\nOnchain reputation, peer attestations, and hackathon awards — all composable.\n\n`
+                    )}&url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`,
+                  },
+                  {
+                    name: "Telegram",
+                    icon: "T",
+                    color: "bg-[#2AABEE]/10 hover:bg-[#2AABEE]/20 text-[#2AABEE]",
+                    href: `https://t.me/share/url?url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}&text=${encodeURIComponent(
+                      `Check out ${p.displayName || p.handle}'s Builder Passport on Monad!`
+                    )}`,
+                  },
+                  {
+                    name: "WhatsApp",
+                    icon: "W",
+                    color: "bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366]",
+                    href: `https://wa.me/?text=${encodeURIComponent(
+                      `Check out ${p.displayName || p.handle}'s Builder Passport on Monad! ${typeof window !== "undefined" ? window.location.href : ""}`
+                    )}`,
+                  },
+                  {
+                    name: "LinkedIn",
+                    icon: "in",
+                    color: "bg-[#0A66C2]/10 hover:bg-[#0A66C2]/20 text-[#0A66C2]",
+                    href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`,
+                  },
+                  {
+                    name: "Email",
+                    icon: "mail",
+                    color: "bg-surface-container-highest hover:bg-surface-bright text-on-surface-variant",
+                    href: `mailto:?subject=${encodeURIComponent(
+                      `${p.displayName || p.handle}'s Builder Passport`
+                    )}&body=${encodeURIComponent(
+                      `Check out this Builder Passport on Monad:\n\n${typeof window !== "undefined" ? window.location.href : ""}`
+                    )}`,
+                  },
+                ].map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-2 group"
+                  >
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${social.color}`}>
+                      {social.icon === "mail" ? (
+                        <span className="material-symbols-outlined text-lg">mail</span>
+                      ) : (
+                        <span className="font-headline font-bold text-sm">{social.icon}</span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-on-surface-variant font-label">{social.name}</span>
+                  </a>
+                ))}
+              </div>
+
+              {/* URL copy field */}
+              <div className="flex items-center gap-2 bg-surface-container-lowest rounded-lg p-1.5 border border-outline-variant/10">
+                <input
+                  type="text"
+                  readOnly
+                  value={typeof window !== "undefined" ? window.location.href : ""}
+                  className="flex-1 bg-transparent border-none text-on-surface-variant text-xs px-3 py-2 outline-none font-mono truncate"
+                />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className={`px-4 py-2 rounded-md text-xs font-bold font-headline transition-all shrink-0 ${
+                    copied
+                      ? "bg-secondary/20 text-secondary"
+                      : "bg-primary/10 hover:bg-primary/20 text-primary"
+                  }`}
+                >
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
