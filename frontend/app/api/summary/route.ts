@@ -10,22 +10,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "MISTRAL_API_KEY not set" }, { status: 500 });
   }
 
-  const { handle, displayName, attestations, award, hackathonName } = await req.json();
+  const { handle, displayName, attestations, award, hackathonName, bio, hasJoined } = await req.json();
 
   const attestationLines = CATEGORIES.map(
     (cat, i) => `${cat}: ${attestations?.[i] ?? 0}`
   ).join(", ");
 
+  const totalAttestations = (attestations ?? []).reduce((s: number, v: number) => s + (v ?? 0), 0);
   const awardName = AWARDS[award ?? 0];
 
   const prompt = `You are writing a short, professional bio summary for a hackathon builder's passport page. Write 2-3 sentences max.
 
 Builder: ${displayName || handle}
+Handle: @${handle}
+${bio ? `Bio: ${bio}` : ""}
 Hackathon: ${hackathonName || "Monad Blitz"}
-Peer attestations: ${attestationLines}
+Joined hackathon: ${hasJoined ? "Yes" : "No"}
+Peer attestations: ${attestationLines} (total: ${totalAttestations})
 Award: ${awardName}
 
-Write a concise summary of this builder's hackathon reputation. Be specific about their strengths based on attestation counts. If they won an award, mention it. Keep it professional and energetic. Do not use emojis. Do not use hashtags.`;
+Write a concise summary of this builder's hackathon reputation. Be specific about their strengths based on attestation counts. If they have no attestations yet, mention they recently joined and are building their reputation. If they won an award, mention it. Keep it professional and energetic. Do not use emojis. Do not use hashtags.`;
 
   const client = new Mistral({ apiKey });
   const result = await client.chat.complete({

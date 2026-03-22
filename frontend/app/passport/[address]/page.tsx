@@ -99,7 +99,7 @@ export default function PassportPage() {
   const [summaryLoading, setSummaryLoading] = useState(false);
 
   useEffect(() => {
-    if (!p?.exists || totalAttestations === 0 && awardIndex === 0) return;
+    if (!p?.exists) return;
 
     setSummaryLoading(true);
     fetch("/api/summary", {
@@ -108,9 +108,11 @@ export default function PassportPage() {
       body: JSON.stringify({
         handle: p.handle,
         displayName: p.displayName,
+        bio: p.bio,
         attestations: attestationReads.map((v: unknown) => Number(v ?? 0)),
         award: awardIndex,
         hackathonName: "Monad Blitz",
+        hasJoined: !!hasJoined,
       }),
     })
       .then((res) => res.json())
