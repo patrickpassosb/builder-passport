@@ -50,17 +50,49 @@ export const EVENT_SIGNATURES = {
     "event ClaimVerified(uint256 indexed claimId, address indexed verifier)",
 } as const;
 
+// Monad Testnet RPC limits eth_getLogs to 100 blocks per query.
+// We paginate from the contract deployment block in parallel batches.
+const DEPLOYMENT_BLOCK = BigInt(20495519);
+const LOG_CHUNK_SIZE = BigInt(100);
+const PARALLEL_BATCH = 10;
+
 export async function getEventLogs(
   publicClient: PublicClient,
   contractAddress: Address,
   eventSignature: string,
   args?: Record<string, unknown>
 ) {
-  return publicClient.getLogs({
-    address: contractAddress,
-    event: parseAbiItem(eventSignature) as any,
-    args,
-    fromBlock: BigInt(0),
-    toBlock: "latest",
-  });
+  const latestBlock = await publicClient.getBlockNumber();
+  const event = parseAbiItem(eventSignature) as any;
+
+  // Build all chunk ranges
+  const chunks: { from: bigint; to: bigint }[] = [];
+  for (let from = DEPLOYMENT_BLOCK; from <= latestBlock; from += LOG_CHUNK_SIZE) {
+    const to = from + LOG_CHUNK_SIZE - BigInt(1) > latestBlock
+      ? latestBlock
+      : from + LOG_CHUNK_SIZE - BigInt(1);
+    chunks.push({ from, to });
+  }
+
+  // Fetch in parallel batches of PARALLEL_BATCH
+  const allLogs: any[] = [];
+  for (let i = 0; i < chunks.length; i += PARALLEL_BATCH) {
+    const batch = chunks.slice(i, i + PARALLEL_BATCH);
+    const results = await Promise.allSettled(
+      batch.map((c) =>
+        publicClient.getLogs({
+          address: contractAddress,
+          event,
+          args,
+          fromBlock: c.from,
+          toBlock: c.to,
+        })
+      )
+    );
+    for (const r of results) {
+      if (r.status === "fulfilled") allLogs.push(...r.value);
+    }
+  }
+
+  return allLogs;
 }
