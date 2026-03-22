@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#deb7ff",
+              "on-tertiary-fixed-variant": "#503983",
+              "outline": "#998ca1",
+              "surface": "#131314",
+              "surface-container-high": "#2a2a2b",
+              "on-tertiary-fixed": "#240555",
+              "error-container": "#93000a",
+              "surface-container-lowest": "#0e0e0f",
+              "tertiary": "#d1bcff",
+              "secondary-container": "#00f4fe",
+              "tertiary-container": "#7e66b3",
+              "inverse-primary": "#8b00e6",
+              "on-primary-fixed-variant": "#6a00b1",
+              "primary-fixed": "#f1dbff",
+              "inverse-surface": "#e5e2e3",
+              "outline-variant": "#4d4355",
+              "on-tertiary": "#39216b",
+              "on-background": "#e5e2e3",
+              "surface-container-low": "#1c1b1c",
+              "surface-container-highest": "#353436",
+              "tertiary-fixed-dim": "#d1bcff",
+              "on-surface": "#e5e2e3",
+              "on-secondary-fixed": "#002021",
+              "surface-dim": "#131314",
+              "on-secondary": "#003739",
+              "error": "#ffb4ab",
+              "secondary-fixed-dim": "#00dce5",
+              "surface-bright": "#39393a",
+              "inverse-on-surface": "#313031",
+              "primary": "#deb7ff",
+              "surface-tint": "#deb7ff",
+              "on-surface-variant": "#d0c1d8",
+              "background": "#131314",
+              "on-tertiary-container": "#fff9ff",
+              "primary-container": "#a332ff",
+              "surface-variant": "#353436",
+              "on-primary-fixed": "#2d0050",
+              "on-primary-container": "#fffafb",
+              "on-secondary-container": "#006c71",
+              "on-primary": "#4a007f",
+              "on-error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#004f53",
+              "tertiary-fixed": "#eaddff",
+              "on-error": "#690005",
+              "secondary": "#e6feff",
+              "surface-container": "#201f20",
+              "secondary-fixed": "#63f7ff"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(53, 52, 54, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .monad-pulse:focus-within {
+            box-shadow: 0 0 15px 2px rgba(230, 254, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#131314]/60 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center w-full px-8 h-16 max-w-7xl mx-auto">
+<div class="text-xl font-bold tracking-tighter text-[#deb7ff] font-['Space_Grotesk']">Builder Passport</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-[#d0c1d8] hover:text-[#deb7ff] transition-colors font-['Space_Grotesk'] tracking-tight text-sm" href="#">Hackathons</a>
+<a class="text-[#deb7ff] border-b-2 border-[#a332ff] pb-1 font-['Space_Grotesk'] tracking-tight text-sm" href="#">Passports</a>
+<a class="text-[#d0c1d8] hover:text-[#deb7ff] transition-colors font-['Space_Grotesk'] tracking-tight text-sm" href="#">Docs</a>
+</div>
+<button class="bg-gradient-to-br from-[#deb7ff] to-[#a332ff] text-[#4a007f] font-medium px-5 py-2 rounded-md active:scale-95 transition-transform text-sm font-['Space_Grotesk'] tracking-tight">
+                Connect Wallet
+            </button>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-12">
+<span class="text-xs font-bold tracking-[0.2em] text-primary uppercase font-label block mb-2">Organizer Dashboard</span>
+<h1 class="text-5xl md:text-6xl font-headline font-bold tracking-tighter text-on-background leading-none">Attestation Hub</h1>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Mark Award Form -->
+<section class="lg:col-span-7 space-y-8">
+<div class="bg-surface-container p-8 rounded-xl relative overflow-hidden monad-pulse">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16"></div>
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-primary">military_tech</span>
+<h2 class="text-2xl font-headline font-semibold text-on-surface">Mark Award</h2>
+</div>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">Select Builder</label>
+<div class="relative group">
+<select class="w-full bg-surface-container-lowest border-none border-b border-outline-variant/30 text-on-surface py-4 pl-4 pr-10 focus:ring-0 focus:border-primary transition-all rounded-md appearance-none cursor-pointer">
+<option>Search for a builder handle...</option>
+<option>@cryptonaut_0x</option>
+<option>@monad_maxi</option>
+<option>@builder_gen</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">Award Tier</label>
+<div class="grid grid-cols-3 gap-4">
+<label class="cursor-pointer group">
+<input checked="" class="hidden peer" name="tier" type="radio"/>
+<div class="bg-surface-container-low border border-outline-variant/10 p-4 rounded-md text-center group-hover:border-primary/50 transition-all peer-checked:bg-primary/10 peer-checked:border-primary">
+<div class="w-10 h-10 rounded-full bg-[#FFD700]/20 flex items-center justify-center mx-auto mb-2">
+<span class="material-symbols-outlined text-[#FFD700]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<span class="text-xs font-bold font-label text-on-surface block">GOLD</span>
+</div>
+</label>
+<label class="cursor-pointer group">
+<input class="hidden peer" name="tier" type="radio"/>
+<div class="bg-surface-container-low border border-outline-variant/10 p-4 rounded-md text-center group-hover:border-primary/50 transition-all peer-checked:bg-primary/10 peer-checked:border-primary">
+<div class="w-10 h-10 rounded-full bg-[#C0C0C0]/20 flex items-center justify-center mx-auto mb-2">
+<span class="material-symbols-outlined text-[#C0C0C0]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<span class="text-xs font-bold font-label text-on-surface block">SILVER</span>
+</div>
+</label>
+<label class="cursor-pointer group">
+<input class="hidden peer" name="tier" type="radio"/>
+<div class="bg-surface-container-low border border-outline-variant/10 p-4 rounded-md text-center group-hover:border-primary/50 transition-all peer-checked:bg-primary/10 peer-checked:border-primary">
+<div class="w-10 h-10 rounded-full bg-[#CD7F32]/20 flex items-center justify-center mx-auto mb-2">
+<span class="material-symbols-outlined text-[#CD7F32]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<span class="text-xs font-bold font-label text-on-surface block">BRONZE</span>
+</div>
+</label>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">Description &amp; Contributions</label>
+<textarea class="w-full bg-surface-container-lowest border-none border-b border-outline-variant/30 text-on-surface p-4 focus:ring-0 focus:border-primary transition-all rounded-md resize-none" placeholder="Provide a brief context for this award..." rows="4"></textarea>
+</div>
+<button class="w-full bg-surface-bright text-on-surface font-headline font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined">verified</span>
+                            Confirm and Sign Award
+                        </button>
+</form>
+</div>
+</section>
+<!-- Right Column: Peer Attestation & Stats -->
+<aside class="lg:col-span-5 space-y-8">
+<div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-xl font-headline font-semibold text-on-surface">Peer Attestation</h3>
+<p class="text-sm text-on-surface-variant font-body">Validate team contributions</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary-container">group_add</span>
+</div>
+</div>
+<div class="space-y-4 mb-8">
+<!-- Simple Feedback List -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-surface-container">
+<img alt="Avatar" class="w-10 h-10 rounded-full" data-alt="Portrait of a young male developer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB657QK8iydYPGiZ_3tJ6qLy3RkuU-hOUgcrFBy57ch3DWeKWqHN46VHYYBqnQyE2UqqT_OhuWCsSLATXnhDHijFNwH63yhNh-DTLBLx_06l4N_gmHS-WA2YNwk6rObFNNH_V6QIo0JSGUMK_-OffuJg921w-CwhF54FUPe-GasHjOqkjGMjtCV-8BtDRJl6br1Mc1do7Z42AjnUA5cg8F7uOOImIm9wYFr31W8TNCiyVTxcjBh88xa1009R5vgwHQ9C8GvCKOW-IG1"/>
+<div class="flex-1">
+<div class="text-sm font-semibold text-on-surface">Alex Rivera</div>
+<div class="text-[0.7rem] text-on-surface-variant uppercase tracking-tighter">Ecosystem Team Alpha</div>
+</div>
+<button class="text-primary text-sm font-label font-bold tracking-widest hover:underline">ATTEST</button>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-lg bg-surface-container">
+<img alt="Avatar" class="w-10 h-10 rounded-full" data-alt="Portrait of a female engineer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChjc_4uPo5LCsvPaO9nLU5oVv_0HGENEHmmC8uSBAl2ozNF4oSoSIcgIIfbnJEnc4sCYm7-eUF0n2DDaQwuuCyDL--7t_wfx_8WxXEIRbJMs5qo2fWhTwpikaHm_yOp8sW2wccu1vM9TrqM4Xr-wpUR9dyf9-xPUinFjSQIUT0Oo952SFLXeNGGxiHc1WpkNjagRQA7s7CASuR8BLXlYZKHHyOVEGkyR7NwrppXwmZAVjq6V8qXsFGJwEijkaGqIEJPAVRH3e1ARpi"/>
+<div class="flex-1">
+<div class="text-sm font-semibold text-on-surface">Sarah Chen</div>
+<div class="text-[0.7rem] text-on-surface-variant uppercase tracking-tighter">Infrastructure Lead</div>
+</div>
+<button class="text-primary text-sm font-label font-bold tracking-widest hover:underline">ATTEST</button>
+</div>
+</div>
+<button class="w-full py-4 border border-outline-variant/30 rounded-md text-on-surface font-headline font-medium hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">person_search</span>
+                        Find Teammate
+                    </button>
+</div>
+<!-- Recent Activity/Stats -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container p-6 rounded-xl">
+<div class="text-2xl font-headline font-bold text-primary tracking-tighter">124</div>
+<div class="text-[0.6rem] uppercase tracking-widest text-on-surface-variant font-label">Total Awards Signed</div>
+</div>
+<div class="bg-surface-container p-6 rounded-xl">
+<div class="text-2xl font-headline font-bold text-secondary-container tracking-tighter">0.02s</div>
+<div class="text-[0.6rem] uppercase tracking-widest text-on-surface-variant font-label">Avg. Block Time</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Success Modal Overlay -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-surface-lowest/90 backdrop-blur-sm">
+<div class="bg-surface-container-high max-w-md w-full p-8 rounded-xl shadow-2xl border border-outline-variant/20 relative animate-in fade-in zoom-in duration-300">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-secondary-container to-transparent opacity-50"></div>
+<div class="flex flex-col items-center text-center">
+<div class="w-20 h-20 rounded-full bg-secondary-container/10 flex items-center justify-center mb-6 relative">
+<span class="material-symbols-outlined text-4xl text-secondary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="absolute inset-0 rounded-full border-2 border-secondary-container animate-ping opacity-20"></div>
+</div>
+<h3 class="text-3xl font-headline font-bold text-on-surface mb-2">Attestation Confirmed</h3>
+<p class="text-on-surface-variant mb-8 text-sm leading-relaxed">The contribution has been on-chain verified and added to the Builder Passport. Your reputation score has increased.</p>
+<div class="w-full bg-surface-container-lowest p-4 rounded-lg mb-8 text-left font-mono text-[0.7rem] text-secondary-container/80 space-y-1">
+<div>TX_HASH: 0x9f...8a2b</div>
+<div>STATUS: COMPLETED</div>
+<div>TIMESTAMP: 2024-05-15 14:22:01</div>
+</div>
+<button class="w-full py-3 bg-surface-variant text-on-surface rounded-md font-headline font-bold hover:bg-surface-bright transition-colors">
+                    Close Dashboard
+                </button>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 border-t border-[#4d4355]/15 bg-[#0e0e0f]">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<div class="space-y-4">
+<div class="text-lg font-bold text-[#deb7ff] font-['Space_Grotesk']">Builder Passport</div>
+<p class="text-[#d0c1d8]/60 text-xs leading-relaxed max-w-xs font-['Inter']">The ultimate reputation protocol for the next generation of cross-chain developers.</p>
+</div>
+<div class="flex flex-col gap-3 font-['Inter'] text-sm">
+<span class="text-[#a332ff] font-bold text-xs uppercase tracking-widest mb-2">Ecosystem</span>
+<a class="text-[#d0c1d8]/60 hover:text-[#deb7ff] transition-colors" href="#">Network Status</a>
+<a class="text-[#d0c1d8]/60 hover:text-[#deb7ff] transition-colors" href="#">Documentation</a>
+</div>
+<div class="flex flex-col gap-3 font-['Inter'] text-sm">
+<span class="text-[#a332ff] font-bold text-xs uppercase tracking-widest mb-2">Developers</span>
+<a class="text-[#d0c1d8]/60 hover:text-[#deb7ff] transition-colors" href="#">Governance</a>
+<a class="text-[#d0c1d8]/60 hover:text-[#deb7ff] transition-colors" href="#">Builders</a>
+</div>
+<div class="flex flex-col gap-3 font-['Inter'] text-sm">
+<span class="text-[#a332ff] font-bold text-xs uppercase tracking-widest mb-2">Privacy</span>
+<a class="text-[#d0c1d8]/60 hover:text-[#deb7ff] transition-colors" href="#">Terms of Service</a>
+<a class="text-[#d0c1d8]/60 hover:text-[#deb7ff] transition-colors" href="#">Privacy Policy</a>
+<p class="mt-4 text-[#d0c1d8]/40 text-[0.65rem]">© 2024 Builder Passport</p>
+</div>
+</div>
+</footer>
+</body></html>

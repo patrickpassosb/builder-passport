@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Builder Passport | Hackathon Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#deb7ff",
+              "on-tertiary-fixed-variant": "#503983",
+              "outline": "#998ca1",
+              "surface": "#131314",
+              "surface-container-high": "#2a2a2b",
+              "on-tertiary-fixed": "#240555",
+              "error-container": "#93000a",
+              "surface-container-lowest": "#0e0e0f",
+              "tertiary": "#d1bcff",
+              "secondary-container": "#00f4fe",
+              "tertiary-container": "#7e66b3",
+              "inverse-primary": "#8b00e6",
+              "on-primary-fixed-variant": "#6a00b1",
+              "primary-fixed": "#f1dbff",
+              "inverse-surface": "#e5e2e3",
+              "outline-variant": "#4d4355",
+              "on-tertiary": "#39216b",
+              "on-background": "#e5e2e3",
+              "surface-container-low": "#1c1b1c",
+              "surface-container-highest": "#353436",
+              "tertiary-fixed-dim": "#d1bcff",
+              "on-surface": "#e5e2e3",
+              "on-secondary-fixed": "#002021",
+              "surface-dim": "#131314",
+              "on-secondary": "#003739",
+              "error": "#ffb4ab",
+              "secondary-fixed-dim": "#00dce5",
+              "surface-bright": "#39393a",
+              "inverse-on-surface": "#313031",
+              "primary": "#deb7ff",
+              "surface-tint": "#deb7ff",
+              "on-surface-variant": "#d0c1d8",
+              "background": "#131314",
+              "on-tertiary-container": "#fff9ff",
+              "primary-container": "#a332ff",
+              "surface-variant": "#353436",
+              "on-primary-fixed": "#2d0050",
+              "on-primary-container": "#fffafb",
+              "on-secondary-container": "#006c71",
+              "on-primary": "#4a007f",
+              "on-error-container": "#ffdad6",
+              "on-secondary-fixed-variant": "#004f53",
+              "tertiary-fixed": "#eaddff",
+              "on-error": "#690005",
+              "secondary": "#e6feff",
+              "surface-container": "#201f20",
+              "secondary-fixed": "#63f7ff"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #131314;
+        color: #e5e2e3;
+        font-family: 'Inter', sans-serif;
+      }
+      .neon-glow:hover {
+        box-shadow: 0 0 15px rgba(222, 183, 255, 0.1);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#131314]/60 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center w-full px-8 h-16 max-w-7xl mx-auto">
+<div class="text-xl font-bold tracking-tighter text-[#deb7ff] font-['Space_Grotesk']">
+                Builder Passport
+            </div>
+<div class="hidden md:flex space-x-8 items-center font-['Space_Grotesk'] tracking-tight">
+<a class="text-[#deb7ff] border-b-2 border-[#a332ff] pb-1 transition-all duration-200" href="#">Hackathons</a>
+<a class="text-[#d0c1d8] hover:text-[#deb7ff] transition-colors" href="#">Passports</a>
+<a class="text-[#d0c1d8] hover:text-[#deb7ff] transition-colors" href="#">Docs</a>
+</div>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-lg font-medium active:scale-95 transition-transform hover:bg-[#353436]/50 transition-all duration-200">
+                Connect Wallet
+            </button>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-8 max-w-7xl mx-auto min-h-screen">
+<!-- Hero Spotlight Section -->
+<section class="mb-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+<div class="lg:col-span-8">
+<span class="font-['Inter'] text-[0.6875rem] uppercase tracking-widest text-primary font-bold mb-4 block">Active Spotlight</span>
+<h1 class="font-['Space_Grotesk'] text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-6">
+                        Monad <span class="text-primary-container">Mania</span> Hackathon
+                    </h1>
+<p class="text-on-surface-variant font-body text-lg max-w-2xl mb-8">
+                        The premiere scaling competition for the next generation of parallel EVM developers. Build high-performance dApps on the Monad ecosystem.
+                    </p>
+</div>
+<div class="lg:col-span-4 flex flex-col items-start lg:items-end pb-2">
+<div class="flex items-center gap-4 mb-4">
+<div class="text-right">
+<span class="block text-on-surface-variant text-xs uppercase tracking-tighter">Total Prize Pool</span>
+<span class="block font-headline text-3xl font-bold text-secondary">250,000 MON</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Featured Card -->
+<div class="relative group mt-8 overflow-hidden rounded-xl bg-surface-container border border-outline-variant/15 p-1">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/5 opacity-50"></div>
+<div class="relative flex flex-col md:flex-row gap-8 p-8 md:p-12 items-center bg-surface-container rounded-lg">
+<div class="w-full md:w-1/3 aspect-video rounded-lg overflow-hidden relative shadow-2xl">
+<img alt="Abstract neon digital network visualization" class="w-full h-auto object-cover" data-alt="Abstract neon digital network visualization" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJEC75eWfDV4VWaph-G51zsTtkOP3gKoPogXMhV3tOUYrs5F32IMatZiGdm86hj-ouoUiuTQuepNk-z6zJ-G9cne50mW1r5bATIJX5VS32YtlzZsnqjjB2RO68RYziOC6gdlxBs1Hf8-JDvj0c9BIeN1behQcwikuK7InKJ2dP8dm6zohJEO8fKB6vhbQsbLfSY9G183GXi3o7RUlhrdPSenfOjjhdHRGU9wuM6-d8YG0P42ThbZKW_sRDHv59ZCoKC-AhOLtwD0Nt"/>
+</div>
+<div class="flex-1 space-y-6">
+<div class="flex flex-wrap gap-3">
+<span class="px-3 py-1 bg-surface-container-highest rounded-full text-[0.6875rem] font-bold text-secondary-fixed-dim uppercase tracking-tighter">Running Now</span>
+<span class="px-3 py-1 bg-surface-container-highest rounded-full text-[0.6875rem] font-bold text-primary-fixed-dim uppercase tracking-tighter">DeFi Track</span>
+<span class="px-3 py-1 bg-surface-container-highest rounded-full text-[0.6875rem] font-bold text-primary-fixed-dim uppercase tracking-tighter">Gaming Track</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div>
+<span class="block text-on-surface-variant text-xs uppercase">Starts</span>
+<span class="block font-headline font-medium">OCT 12, 2024</span>
+</div>
+<div>
+<span class="block text-on-surface-variant text-xs uppercase">Ends</span>
+<span class="block font-headline font-medium">NOV 15, 2024</span>
+</div>
+<div>
+<span class="block text-on-surface-variant text-xs uppercase">Builders</span>
+<span class="block font-headline font-medium">1,420+</span>
+</div>
+<div>
+<span class="block text-on-surface-variant text-xs uppercase">Status</span>
+<span class="flex items-center gap-2 font-headline font-medium">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(230,254,255,0.8)]"></span>
+                                    LIVE
+                                </span>
+</div>
+</div>
+<div class="pt-4">
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-10 py-4 rounded-lg font-bold text-lg hover:shadow-[0_0_20px_rgba(163,50,255,0.3)] transition-all active:scale-95">
+                                Join Hackathon
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Filter & Header -->
+<section class="mb-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-outline-variant/15 pb-8">
+<h2 class="font-headline text-3xl font-bold tracking-tight">Explore Events</h2>
+<div class="flex bg-surface-container-low p-1 rounded-xl">
+<button class="px-6 py-2 rounded-lg text-sm font-medium bg-surface-container-highest text-primary transition-all">Upcoming</button>
+<button class="px-6 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">Ongoing</button>
+<button class="px-6 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all">Completed</button>
+</div>
+</div>
+</section>
+<!-- Hackathon Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="group bg-surface-container border border-outline-variant/15 rounded-xl p-6 hover:border-primary/40 transition-all duration-300 relative overflow-hidden flex flex-col">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-all"></div>
+<div class="mb-6 flex justify-between items-start">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" data-icon="data_object">data_object</span>
+</div>
+<span class="text-[0.6875rem] font-bold py-1 px-3 rounded-full bg-surface-container-lowest border border-outline-variant/15 text-on-surface-variant">22 DAYS LEFT</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2 group-hover:text-primary transition-colors">Infra-Scale Global</h3>
+<p class="text-on-surface-variant text-sm mb-8 flex-grow">Optimizing RPC nodes and data indexing solutions for the Monad mainnet launch phase.</p>
+<div class="space-y-4 pt-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Prize Pool</span>
+<span class="font-headline font-bold text-secondary">75,000 MON</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Dates</span>
+<span class="font-headline">Dec 01 - Dec 20</span>
+</div>
+<button class="w-full py-3 bg-surface-container-highest rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95">
+                        Join Event
+                    </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface-container border border-outline-variant/15 rounded-xl p-6 hover:border-primary/40 transition-all duration-300 relative overflow-hidden flex flex-col">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-all"></div>
+<div class="mb-6 flex justify-between items-start">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" data-icon="token">token</span>
+</div>
+<span class="text-[0.6875rem] font-bold py-1 px-3 rounded-full bg-surface-container-lowest border border-outline-variant/15 text-on-surface-variant">STARTS JAN</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2 group-hover:text-primary transition-colors">Yield Masters v2</h3>
+<p class="text-on-surface-variant text-sm mb-8 flex-grow">Novel liquidity provisioning and automated yield strategies built on Monad's parallel architecture.</p>
+<div class="space-y-4 pt-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Prize Pool</span>
+<span class="font-headline font-bold text-secondary">50,000 MON</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Dates</span>
+<span class="font-headline">Jan 10 - Jan 30</span>
+</div>
+<button class="w-full py-3 bg-surface-container-highest rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95">
+                        Join Event
+                    </button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface-container border border-outline-variant/15 rounded-xl p-6 hover:border-primary/40 transition-all duration-300 relative overflow-hidden flex flex-col">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-all"></div>
+<div class="mb-6 flex justify-between items-start">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" data-icon="sports_esports">sports_esports</span>
+</div>
+<span class="text-[0.6875rem] font-bold py-1 px-3 rounded-full bg-surface-container-lowest border border-outline-variant/15 text-on-surface-variant">STARTS FEB</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2 group-hover:text-primary transition-colors">Pixel Parallel Arcade</h3>
+<p class="text-on-surface-variant text-sm mb-8 flex-grow">High-throughput on-chain gaming. Creating real-time interactive experiences without latency.</p>
+<div class="space-y-4 pt-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Prize Pool</span>
+<span class="font-headline font-bold text-secondary">100,000 MON</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Dates</span>
+<span class="font-headline">Feb 15 - Mar 15</span>
+</div>
+<button class="w-full py-3 bg-surface-container-highest rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95">
+                        Join Event
+                    </button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="group bg-surface-container border border-outline-variant/15 rounded-xl p-6 hover:border-primary/40 transition-all duration-300 relative overflow-hidden flex flex-col">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-all"></div>
+<div class="mb-6 flex justify-between items-start">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" data-icon="security">security</span>
+</div>
+<span class="text-[0.6875rem] font-bold py-1 px-3 rounded-full bg-surface-container-lowest border border-outline-variant/15 text-on-surface-variant">OPEN SOON</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2 group-hover:text-primary transition-colors">Zero-Knowledge Forge</h3>
+<p class="text-on-surface-variant text-sm mb-8 flex-grow">Implementing ZK-proofs for private transactions and state compression on Monad.</p>
+<div class="space-y-4 pt-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Prize Pool</span>
+<span class="font-headline font-bold text-secondary">120,000 MON</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Dates</span>
+<span class="font-headline">Mar 20 - Apr 20</span>
+</div>
+<button class="w-full py-3 bg-surface-container-highest rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95">
+                        Join Event
+                    </button>
+</div>
+</div>
+<div class="group bg-surface-container-low border border-outline-variant/15 rounded-xl p-6 border-dashed flex flex-col items-center justify-center text-center opacity-60 hover:opacity-100 transition-all">
+<span class="material-symbols-outlined text-4xl text-outline mb-4" data-icon="add_circle">add_circle</span>
+<h3 class="font-headline text-lg font-bold mb-2">Host an Event</h3>
+<p class="text-on-surface-variant text-sm max-w-[200px]">Launch your own hackathon track on Builder Passport</p>
+<button class="mt-6 text-primary font-bold text-sm uppercase tracking-widest hover:underline">Apply Here</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 border-t border-[#4d4355]/15 bg-[#0e0e0f]">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<div class="md:col-span-1">
+<div class="text-lg font-bold text-[#deb7ff] mb-4 font-['Space_Grotesk']">Builder Passport</div>
+<p class="text-[#d0c1d8]/60 text-sm font-['Inter'] leading-relaxed">
+                    The decentralized identity and merit protocol for cross-chain ecosystems. Empowering builders through verifiable contribution.
+                </p>
+</div>
+<div>
+<h4 class="text-[#deb7ff] font-bold text-sm mb-4">Ecosystem</h4>
+<ul class="space-y-2 text-sm text-[#d0c1d8]/60 font-['Inter']">
+<li><a class="hover:text-[#deb7ff] transition-colors" href="#">Partners</a></li>
+<li><a class="hover:text-[#deb7ff] transition-colors" href="#">Network Status</a></li>
+<li><a class="hover:text-[#deb7ff] transition-colors" href="#">Governance</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-[#deb7ff] font-bold text-sm mb-4">Developers</h4>
+<ul class="space-y-2 text-sm text-[#d0c1d8]/60 font-['Inter']">
+<li><a class="hover:text-[#deb7ff] transition-colors" href="#">SDK Documentation</a></li>
+<li><a class="hover:text-[#deb7ff] transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-[#deb7ff] transition-colors" href="#">Developer Portal</a></li>
+</ul>
+</div>
+<div class="flex flex-col justify-between">
+<div>
+<h4 class="text-[#deb7ff] font-bold text-sm mb-4">Connect</h4>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-[#d0c1d8]/60 hover:text-[#deb7ff] cursor-pointer">terminal</span>
+<span class="material-symbols-outlined text-[#d0c1d8]/60 hover:text-[#deb7ff] cursor-pointer">account_tree</span>
+<span class="material-symbols-outlined text-[#d0c1d8]/60 hover:text-[#deb7ff] cursor-pointer">forum</span>
+</div>
+</div>
+<div class="text-[#d0c1d8]/40 text-xs mt-8">
+                    © 2024 Builder Passport
+                </div>
+</div>
+</div>
+</footer>
+</body></html>
