@@ -1,27 +1,27 @@
-# 🛂 Builder Passport
+# Builder Passport
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Monad Testnet](https://img.shields.io/badge/Network-Monad%20Testnet-blue)](https://monad.xyz/)
 
-A portable onchain record of hackathon participation, contribution, and wins — built on **Monad**.
+Builder Passport is a portable on-chain record of hackathon participation, contribution, and achievements, built on **Monad**.
 
-Builder Passport turns hackathon achievements into public, verifiable credentials. It allows builders to create a unified identity across multiple events, recognize their peers, and collect official awards from organizers.
-
----
-
-## ✨ Key Features
-
-- 🆔 **Builder Profiles** — Create a persistent, onchain builder identity with GitHub and LinkedIn links.
-- 🏆 **Hackathon Registry** — Organizers can create events onchain and builders can join them.
-- 🤝 **Peer Attestations** — Builders recognize each other's contributions (Technical, Product, Pitch, Helpful, Teamwork).
-- 🏅 **Organizer Awards** — Verifiable results issued by event organizers (Winner, Finalist, Honorable Mention, Best Technical Solution).
-- 📜 **Passport Page** — A central display for all your onchain achievements.
+The platform transforms hackathon milestones into verifiable public credentials. It enables builders to establish a unified identity across multiple events, facilitate peer recognition, and receive official awards from organizers.
 
 ---
 
-## 🛠 Tech Stack
+## Key Features
 
-- **Smart Contract**: Solidity 0.8.28 (Foundry)
+- **Builder Profiles** — Maintain a persistent, on-chain identity linked to GitHub and LinkedIn.
+- **Hackathon Registry** — Tools for organizers to create events and for builders to register on-chain.
+- **Peer Attestations** — Facilitates peer-to-peer recognition across Technical, Product, Pitch, and Teamwork categories.
+- **Organizer Awards** — Verifiable achievement badges issued by event organizers (e.g., Winner, Finalist, Honorable Mention).
+- **Passport Dashboard** — A centralized interface to showcase all on-chain achievements.
+
+---
+
+## Tech Stack
+
+- **Smart Contracts**: Solidity 0.8.28 (Foundry)
   - **EVM Version**: Prague
   - **Network**: Monad Testnet (Chain ID `10143`)
 - **Frontend**: Next.js 15 (React 19, Tailwind CSS 4, Wagmi, Viem)
@@ -29,7 +29,7 @@ Builder Passport turns hackathon achievements into public, verifiable credential
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```bash
 .
@@ -43,15 +43,15 @@ Builder Passport turns hackathon achievements into public, verifiable credential
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- [Foundry](https://getfoundry.sh/) (for smart contracts)
-- [Node.js](https://nodejs.org/) (for frontend)
+- [Foundry](https://getfoundry.sh/) (Smart contract development)
+- [Node.js](https://nodejs.org/) (Frontend development)
 - [NPM](https://www.npmjs.com/) or [PNPM](https://pnpm.io/)
 
-### 🛠 Backend (Smart Contracts)
+### Backend (Smart Contracts)
 
 1. **Install dependencies:**
    ```bash
@@ -66,7 +66,7 @@ Builder Passport turns hackathon achievements into public, verifiable credential
    forge test
    ```
 
-### 🌐 Frontend
+### Frontend
 
 1. **Navigate to the frontend directory:**
    ```bash
@@ -87,7 +87,7 @@ Builder Passport turns hackathon achievements into public, verifiable credential
 
 ---
 
-## 🏗 Deployment to Monad Testnet
+## Deployment to Monad Testnet
 
 Ensure you have a `.env` file or export your `PRIVATE_KEY`.
 
@@ -106,21 +106,22 @@ forge script script/Deploy.s.sol:DeployScript \
 
 ---
 
-## 📜 Contract Overview
+## Contract Overview
 
-The `BuilderPassport.sol` contract exposes the following core functions:
+The `BuilderPassport.sol` contract manages the core logic through the following functions:
 
 | Function | Description | Access |
 |---|---|---|
-| `createProfile` | Create a builder identity | Anyone |
-| `updateProfile` | Update profile fields | Profile Owner |
-| `createHackathon` | Create a new event | Anyone (becomes Organizer) |
-| `joinHackathon` | Join an active hackathon | Registered Builder |
-| `attestContribution` | Recognize a peer's contribution | Participant |
-| `assignAward` | Assign official results | Organizer |
+| `createProfile` | Initialize a builder identity | Public |
+| `updateProfile` | Modify profile information | Profile Owner |
+| `createHackathon` | Register a new hackathon event | Public (becomes Organizer) |
+| `joinHackathon` | Participate in an active event | Registered Builder |
+| `attestContribution` | Endorse a peer's contribution | Event Participant |
+| `assignAward` | Issue official achievement results | Organizer |
 
 ---
 
-## ⚖️ License
+## License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
+
