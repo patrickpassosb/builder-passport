@@ -24,11 +24,9 @@ export default function LandingPage() {
     if (!publicClient) return;
     async function fetchStats() {
       try {
-        const [profiles, attestations, awards] = await Promise.all([
-          getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.ProfileCreated),
-          getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.ContributionAttested),
-          getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.AwardAssigned),
-        ]);
+        const profiles = await getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.ProfileCreated);
+        const attestations = await getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.ContributionAttested);
+        const awards = await getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.AwardAssigned);
         setStats({
           profiles: profiles.length,
           attestations: attestations.length,

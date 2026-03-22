@@ -9,12 +9,10 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { type Address, parseAbiItem } from "viem";
+import { type Address } from "viem";
 import {
   CONTRACT_ADDRESS,
   CONTRACT_ABI,
-  EVENT_SIGNATURES,
-  getEventLogs,
 } from "@/lib/contract";
 
 interface HackathonEntry {
@@ -67,20 +65,13 @@ export default function HackathonsPage() {
               args: [BigInt(i)],
             })) as any;
 
-            const logs = await getEventLogs(
-              publicClient!,
-              CONTRACT_ADDRESS,
-              EVENT_SIGNATURES.JoinedHackathon,
-              { hackathonId: BigInt(i) }
-            );
-
             results.push({
               id: i,
               name: hackathon.name,
               city: hackathon.city,
               organizer: hackathon.organizer,
               active: hackathon.active,
-              participantCount: logs.length,
+              participantCount: 0,
             });
           } catch {
             // Skip hackathons that fail to load
@@ -125,20 +116,13 @@ export default function HackathonsPage() {
                 args: [BigInt(i)],
               })) as any;
 
-              const logs = await getEventLogs(
-                publicClient!,
-                CONTRACT_ADDRESS,
-                EVENT_SIGNATURES.JoinedHackathon,
-                { hackathonId: BigInt(i) }
-              );
-
               results.push({
                 id: i,
                 name: hackathon.name,
                 city: hackathon.city,
                 organizer: hackathon.organizer,
                 active: hackathon.active,
-                participantCount: logs.length,
+                participantCount: 0,
               });
             } catch {
               // Skip

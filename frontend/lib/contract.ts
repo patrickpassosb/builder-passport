@@ -54,7 +54,7 @@ export const EVENT_SIGNATURES = {
 // We paginate from the contract deployment block in parallel batches.
 const DEPLOYMENT_BLOCK = BigInt(20495519);
 const LOG_CHUNK_SIZE = BigInt(100);
-const PARALLEL_BATCH = 10;
+const PARALLEL_BATCH = 3;
 
 export async function getEventLogs(
   publicClient: PublicClient,

@@ -1,25 +1,54 @@
 # Compiler files
 cache/
 out/
-
-# Broadcast logs
-/broadcast/
+broadcast/
+cache/
 
 # Environment
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Dependencies
 node_modules/
+.pnp
+.pnp.js
 
 # OS
 .DS_Store
 Thumbs.db
+._*
+.Spotlight-V100
+.Trashes
 
 # IDE
 .vscode/
 .idea/
+.history/
+*.swp
+*.swo
 
 # Next.js
 .next/
-frontend/.next/
+dist/
+build/
+out/
+static/
+next-env.d.ts
+
+# Testing
+coverage/
+.nyc_output/
+*.log
+
+# Forge/Foundry
+lib/forge-std/
+artifacts/
+build-info/
+*.abi
+*.bin

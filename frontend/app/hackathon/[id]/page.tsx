@@ -10,8 +10,8 @@ import {
   useWaitForTransactionReceipt,
   usePublicClient,
 } from "wagmi";
-import { parseAbiItem, type Address } from "viem";
-import { CONTRACT_ADDRESS, CONTRACT_ABI, CONTRIBUTION_CATEGORIES, AWARD_TYPES } from "@/lib/contract";
+import { type Address } from "viem";
+import { CONTRACT_ADDRESS, CONTRACT_ABI, CONTRIBUTION_CATEGORIES, AWARD_TYPES, EVENT_SIGNATURES, getEventLogs } from "@/lib/contract";
 import { AddressAvatar } from "@/components/AddressAvatar";
 import Link from "next/link";
 
@@ -93,15 +93,14 @@ export default function HackathonPage() {
     async function fetchParticipants() {
       setLoadingParticipants(true);
       try {
-        const logs = await publicClient!.getLogs({
-          address: CONTRACT_ADDRESS,
-          event: parseAbiItem("event JoinedHackathon(uint256 indexed hackathonId, address indexed participant)"),
-          args: { hackathonId },
-          fromBlock: BigInt(0),
-          toBlock: "latest",
-        });
+        const logs = await getEventLogs(
+          publicClient!,
+          CONTRACT_ADDRESS,
+          EVENT_SIGNATURES.JoinedHackathon,
+          { hackathonId }
+        );
 
-        const addresses = logs.map((log) => log.args.participant as Address);
+        const addresses = logs.map((log) => (log as any).args.participant as Address);
         const profileResults: Participant[] = [];
 
         for (const addr of addresses) {

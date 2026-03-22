@@ -67,17 +67,23 @@ export default function BuildersPage() {
 
             if (!profile?.exists) continue;
 
-            // 2b. Fetch JoinedHackathon events for this address
-            const joinedLogs = await getEventLogs(
-              publicClient!,
-              CONTRACT_ADDRESS,
-              EVENT_SIGNATURES.JoinedHackathon,
-              { participant: addr }
-            );
+            // 2b. Find hackathons this address joined via direct reads
+            const totalHackathons = (await publicClient!.readContract({
+              address: CONTRACT_ADDRESS,
+              abi: CONTRACT_ABI,
+              functionName: "nextHackathonId",
+            })) as bigint;
 
-            const hackathonIds = joinedLogs.map(
-              (log) => (log as any).args.hackathonId as bigint
-            );
+            const hackathonIds: bigint[] = [];
+            for (let h = BigInt(0); h < totalHackathons; h++) {
+              const joined = await publicClient!.readContract({
+                address: CONTRACT_ADDRESS,
+                abi: CONTRACT_ABI,
+                functionName: "hasUserJoined",
+                args: [h, addr],
+              });
+              if (joined) hackathonIds.push(h);
+            }
 
             // 2c. For each hackathon, fetch attestation counts and award
             let totalAttestations = 0;
