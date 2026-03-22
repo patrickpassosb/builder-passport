@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useReadContract } from "wagmi";
 import { type Address } from "viem";
@@ -55,6 +56,31 @@ export default function PassportPage() {
     (sum: number, val: unknown) => sum + Number(val ?? 0),
     0
   );
+
+  // AI Summary
+  const [summary, setSummary] = useState<string>("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
+
+  useEffect(() => {
+    if (!p?.exists || totalAttestations === 0 && awardIndex === 0) return;
+
+    setSummaryLoading(true);
+    fetch("/api/summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        handle: p.handle,
+        displayName: p.displayName,
+        attestations: attestationReads.map((v: unknown) => Number(v ?? 0)),
+        award: awardIndex,
+        hackathonName: "Monad Blitz",
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setSummary(data.summary ?? ""))
+      .catch(() => setSummary(""))
+      .finally(() => setSummaryLoading(false));
+  }, [p?.exists, totalAttestations, awardIndex]);
 
   if (!p?.exists) {
     return (
@@ -123,6 +149,29 @@ export default function PassportPage() {
             )}
           </div>
         </div>
+
+        {/* AI Summary */}
+        {(summary || summaryLoading) && (
+          <div className="mt-8 glass-card p-6 rounded-xl">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-primary text-lg">
+                auto_awesome
+              </span>
+              <span className="font-label text-xs font-bold text-primary tracking-[0.2em] uppercase">
+                AI Summary
+              </span>
+            </div>
+            {summaryLoading ? (
+              <p className="text-on-surface-variant text-sm animate-pulse">
+                Generating summary...
+              </p>
+            ) : (
+              <p className="text-on-surface text-lg leading-relaxed">
+                {summary}
+              </p>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Stats Grid */}
