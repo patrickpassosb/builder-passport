@@ -17,8 +17,6 @@ import {
   CLAIMS_ABI,
   CONTRIBUTION_CATEGORIES,
   AWARD_TYPES,
-  EVENT_SIGNATURES,
-  getEventLogs,
 } from "@/lib/contract";
 import { AddressAvatar } from "@/components/AddressAvatar";
 import Link from "next/link";
@@ -102,15 +100,25 @@ export default function PassportPage() {
     async function fetchData() {
       setLoadingData(true);
       try {
-        // Get all hackathons this user joined
-        const joinLogs = await getEventLogs(
-          publicClient!,
-          CONTRACT_ADDRESS,
-          EVENT_SIGNATURES.JoinedHackathon,
-          { participant: userAddress }
-        );
+        // Get all hackathons this user joined by checking each hackathon directly
+        // (avoids eth_getLogs which is limited to 100 blocks on Monad)
+        const totalHackathons = (await publicClient!.readContract({
+          address: CONTRACT_ADDRESS,
+          abi: CONTRACT_ABI,
+          functionName: "nextHackathonId",
+        })) as bigint;
 
-        const hackathonIds = joinLogs.map((log) => (log as any).args.hackathonId as bigint);
+        const hackathonIds: bigint[] = [];
+        for (let i = BigInt(0); i < totalHackathons; i++) {
+          const joined = await publicClient!.readContract({
+            address: CONTRACT_ADDRESS,
+            abi: CONTRACT_ABI,
+            functionName: "hasUserJoined",
+            args: [i, userAddress],
+          });
+          if (joined) hackathonIds.push(i);
+        }
+
         const records: HackathonRecord[] = [];
 
         for (const hId of hackathonIds) {
