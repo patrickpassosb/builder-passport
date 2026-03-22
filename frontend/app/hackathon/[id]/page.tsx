@@ -13,6 +13,7 @@ import {
 import { parseAbiItem, type Address } from "viem";
 import { CONTRACT_ADDRESS, CONTRACT_ABI, CONTRIBUTION_CATEGORIES, AWARD_TYPES } from "@/lib/contract";
 import { AddressAvatar } from "@/components/AddressAvatar";
+import Link from "next/link";
 
 interface Participant {
   address: Address;
@@ -436,17 +437,17 @@ export default function HackathonPage() {
                       .map((participant) => (
                         <div key={participant.address}>
                           <div className="flex items-center gap-4 p-4 rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors">
-                            <div className="w-10 h-10 rounded-full overflow-hidden">
+                            <Link href={`/passport/${participant.address}`} className="w-10 h-10 rounded-full overflow-hidden">
                               <AddressAvatar address={participant.address} size={40} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-semibold text-on-surface truncate">
+                            </Link>
+                            <Link href={`/passport/${participant.address}`} className="flex-1 min-w-0">
+                              <div className="text-sm font-semibold text-on-surface truncate hover:text-primary transition-colors">
                                 {participant.displayName}
                               </div>
                               <div className="text-[0.7rem] text-on-surface-variant uppercase tracking-tighter">
                                 @{participant.handle}
                               </div>
-                            </div>
+                            </Link>
                             <button
                               onClick={() => {
                                 setAttestTarget(participant.address);

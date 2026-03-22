@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, usePublicClient } from "wagmi";
+import { CONTRACT_ADDRESS, EVENT_SIGNATURES, getEventLogs } from "@/lib/contract";
 import { useRouter } from "next/navigation";
 import { AddressAvatar } from "@/components/AddressAvatar";
 import { useState, useEffect } from "react";
@@ -15,6 +16,30 @@ export default function LandingPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const publicClient = usePublicClient();
+  const [stats, setStats] = useState({ profiles: 0, attestations: 0, awards: 0 });
+
+  useEffect(() => {
+    if (!publicClient) return;
+    async function fetchStats() {
+      try {
+        const [profiles, attestations, awards] = await Promise.all([
+          getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.ProfileCreated),
+          getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.ContributionAttested),
+          getEventLogs(publicClient!, CONTRACT_ADDRESS, EVENT_SIGNATURES.AwardAssigned),
+        ]);
+        setStats({
+          profiles: profiles.length,
+          attestations: attestations.length,
+          awards: awards.length,
+        });
+      } catch {
+        // Keep defaults
+      }
+    }
+    fetchStats();
+  }, [publicClient]);
 
   return (
     <>
@@ -43,7 +68,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               {mounted && isConnected ? (
                 <button
-                  onClick={() => router.push("/hackathon/0")}
+                  onClick={() => router.push("/hackathons")}
                   className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-[0_0_30px_rgba(163,50,255,0.3)] transition-all"
                 >
                   Enter Hackathon
@@ -59,10 +84,10 @@ export default function LandingPage() {
                 </button>
               )}
               <Link
-                href="/hackathon/0"
+                href="/hackathons"
                 className="glass-card text-on-surface px-8 py-4 rounded-xl font-bold text-lg hover:bg-surface-variant/60 transition-all border border-outline-variant/20 text-center"
               >
-                View Hackathon
+                Explore Hackathons
               </Link>
             </div>
           </div>
@@ -122,7 +147,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             <div>
               <p className="font-headline text-5xl font-bold text-on-surface mb-2">
-                Profiles
+                {stats.profiles}
               </p>
               <p className="text-on-surface-variant font-label tracking-widest uppercase text-xs">
                 Onchain builder identities
@@ -130,7 +155,7 @@ export default function LandingPage() {
             </div>
             <div>
               <p className="font-headline text-5xl font-bold text-primary mb-2">
-                Attestations
+                {stats.attestations}
               </p>
               <p className="text-on-surface-variant font-label tracking-widest uppercase text-xs">
                 Peer-recognized contributions
@@ -138,7 +163,7 @@ export default function LandingPage() {
             </div>
             <div>
               <p className="font-headline text-5xl font-bold text-secondary mb-2">
-                Awards
+                {stats.awards}
               </p>
               <p className="text-on-surface-variant font-label tracking-widest uppercase text-xs">
                 Organizer-verified results
@@ -231,7 +256,7 @@ export default function LandingPage() {
             </p>
             {mounted && isConnected ? (
               <button
-                onClick={() => router.push("/hackathon/0")}
+                onClick={() => router.push("/hackathons")}
                 className="bg-primary text-on-primary px-10 py-5 rounded-xl font-bold text-xl hover:scale-105 transition-transform"
               >
                 Enter Hackathon

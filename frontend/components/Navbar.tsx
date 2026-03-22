@@ -38,8 +38,9 @@ export function Navbar() {
   }, [isMenuOpen]);
 
   const navLinks = [
-    { href: "/hackathon/0", label: "Hackathons", match: "/hackathon" },
-    { href: `/passport/${mounted && address ? address : "0x"}`, label: "Passports", match: "/passport" },
+    { href: "/hackathons", label: "Hackathons", match: "/hackathon" },
+    { href: "/builders", label: "Builders", match: "/builders" },
+    { href: `/passport/${mounted && address ? address : "0x"}`, label: "My Passport", match: "/passport" },
   ];
 
   return (
