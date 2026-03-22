@@ -281,6 +281,27 @@ export default function PassportPage() {
               <span className="bg-surface-container-highest text-on-surface px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
                 @{p.handle}
               </span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("Link copied to clipboard!");
+                }}
+                className="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all"
+              >
+                <span className="material-symbols-outlined text-sm">content_copy</span>
+                Copy Link
+              </button>
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                  `Just updated my @Monad_xyz Builder Passport! ⚡\n\nCheck out my onchain reputation and attestations here:\n\n${window.location.href}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-[#1DA1F2]/10 hover:bg-[#1DA1F2]/20 text-[#1DA1F2] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all"
+              >
+                <span className="material-symbols-outlined text-sm">share</span>
+                Share on X
+              </a>
             </div>
             {p.bio && (
               <p className="text-on-surface-variant text-lg max-w-2xl">

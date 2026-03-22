@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Builder Passport",
   description:
     "A portable onchain record of hackathon participation, contribution, and wins.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
