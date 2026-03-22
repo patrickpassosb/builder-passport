@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   useAccount,
@@ -8,14 +8,24 @@ import {
   useReadContract,
   useWriteContract,
   useWaitForTransactionReceipt,
+  usePublicClient,
 } from "wagmi";
+import { parseAbiItem, type Address } from "viem";
 import { CONTRACT_ADDRESS, CONTRACT_ABI, CONTRIBUTION_CATEGORIES, AWARD_TYPES } from "@/lib/contract";
+import { AddressAvatar } from "@/components/AddressAvatar";
+
+interface Participant {
+  address: Address;
+  handle: string;
+  displayName: string;
+}
 
 export default function HackathonPage() {
   const { id } = useParams<{ id: string }>();
   const hackathonId = BigInt(id ?? "0");
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
+  const publicClient = usePublicClient();
 
   // Profile form state
   const [handle, setHandle] = useState("");
@@ -27,24 +37,28 @@ export default function HackathonPage() {
   // Attestation state
   const [attestTarget, setAttestTarget] = useState("");
   const [attestCategory, setAttestCategory] = useState(0);
+  const [showCategoryFor, setShowCategoryFor] = useState<string | null>(null);
 
   // Award state
   const [awardTarget, setAwardTarget] = useState("");
   const [awardType, setAwardType] = useState(1);
 
-  // Success modal
+  // UI state
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState("");
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
 
   // Contract reads
-  const { data: hackathon } = useReadContract({
+  const { data: hackathon, isLoading: hackathonLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "getHackathon",
     args: [hackathonId],
   });
 
-  const { data: profile } = useReadContract({
+  const { data: profile, isLoading: profileLoading } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "getProfile",
@@ -71,6 +85,65 @@ export default function HackathonPage() {
   const hackathonData = hackathon as any;
   const isOrganizer = hackathonData?.organizer === address;
 
+  // Fetch participants from JoinedHackathon events
+  useEffect(() => {
+    if (!publicClient || !hackathonData?.active) return;
+
+    async function fetchParticipants() {
+      setLoadingParticipants(true);
+      try {
+        const logs = await publicClient!.getLogs({
+          address: CONTRACT_ADDRESS,
+          event: parseAbiItem("event JoinedHackathon(uint256 indexed hackathonId, address indexed participant)"),
+          args: { hackathonId },
+          fromBlock: BigInt(0),
+          toBlock: "latest",
+        });
+
+        const addresses = logs.map((log) => log.args.participant as Address);
+        const profileResults: Participant[] = [];
+
+        for (const addr of addresses) {
+          try {
+            const p = await publicClient!.readContract({
+              address: CONTRACT_ADDRESS,
+              abi: CONTRACT_ABI,
+              functionName: "getProfile",
+              args: [addr],
+            }) as any;
+
+            if (p?.exists) {
+              profileResults.push({
+                address: addr,
+                handle: p.handle,
+                displayName: p.displayName || p.handle,
+              });
+            }
+          } catch {}
+        }
+
+        setParticipants(profileResults);
+      } catch {
+        setParticipants([]);
+      }
+      setLoadingParticipants(false);
+    }
+
+    fetchParticipants();
+  }, [publicClient, hackathonData?.active, hackathonId, hasJoined]);
+
+  // Auto-dismiss errors
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  function showError(msg: string) {
+    setError(msg);
+  }
+
   function handleCreateProfile() {
     writeContract(
       {
@@ -84,6 +157,7 @@ export default function HackathonPage() {
           setSuccessMessage("Profile created!");
           setShowSuccess(true);
         },
+        onError: (err) => showError(err.message.split("\n")[0]),
       }
     );
   }
@@ -101,6 +175,7 @@ export default function HackathonPage() {
           setSuccessMessage("Joined hackathon!");
           setShowSuccess(true);
         },
+        onError: (err) => showError(err.message.split("\n")[0]),
       }
     );
   }
@@ -111,13 +186,16 @@ export default function HackathonPage() {
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "attestContribution",
-        args: [hackathonId, attestTarget as `0x${string}`, attestCategory],
+        args: [hackathonId, attestTarget as Address, attestCategory],
       },
       {
         onSuccess: () => {
           setSuccessMessage("Attestation confirmed!");
           setShowSuccess(true);
+          setShowCategoryFor(null);
+          setAttestTarget("");
         },
+        onError: (err) => showError(err.message.split("\n")[0]),
       }
     );
   }
@@ -128,13 +206,14 @@ export default function HackathonPage() {
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "assignAward",
-        args: [hackathonId, awardTarget as `0x${string}`, awardType],
+        args: [hackathonId, awardTarget as Address, awardType],
       },
       {
         onSuccess: () => {
           setSuccessMessage("Award assigned!");
           setShowSuccess(true);
         },
+        onError: (err) => showError(err.message.split("\n")[0]),
       }
     );
   }
@@ -153,6 +232,22 @@ export default function HackathonPage() {
           >
             Connect Wallet
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading skeleton
+  if (hackathonLoading || profileLoading) {
+    return (
+      <div className="pt-8 pb-20 px-8 max-w-7xl mx-auto">
+        <div className="animate-pulse space-y-8">
+          <div className="h-12 bg-surface-container-high rounded-lg w-1/2" />
+          <div className="h-64 bg-surface-container rounded-xl" />
+          <div className="grid grid-cols-2 gap-8">
+            <div className="h-48 bg-surface-container rounded-xl" />
+            <div className="h-48 bg-surface-container rounded-xl" />
+          </div>
         </div>
       </div>
     );
@@ -197,53 +292,45 @@ export default function HackathonPage() {
                   <span className="px-3 py-1 bg-surface-container-highest rounded-full text-[0.6875rem] font-bold text-secondary-fixed-dim uppercase tracking-tighter">
                     {hackathonData?.active ? "Running Now" : "Pending"}
                   </span>
+                  <span className="px-3 py-1 bg-surface-container-highest rounded-full text-[0.6875rem] font-bold text-primary-fixed-dim uppercase tracking-tighter">
+                    {participants.length} Builder{participants.length !== 1 ? "s" : ""}
+                  </span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                   <div>
-                    <span className="block text-on-surface-variant text-xs uppercase">
-                      City
-                    </span>
-                    <span className="block font-headline font-medium">
-                      {hackathonData?.city || "TBD"}
-                    </span>
+                    <span className="block text-on-surface-variant text-xs uppercase">City</span>
+                    <span className="block font-headline font-medium">{hackathonData?.city || "TBD"}</span>
                   </div>
                   <div>
-                    <span className="block text-on-surface-variant text-xs uppercase">
-                      Your Status
-                    </span>
-                    <span className="block font-headline font-medium">
-                      {hasJoined ? "Joined" : "Not Joined"}
-                    </span>
+                    <span className="block text-on-surface-variant text-xs uppercase">Your Status</span>
+                    <span className="block font-headline font-medium">{hasJoined ? "Joined" : "Not Joined"}</span>
                   </div>
                   <div>
-                    <span className="block text-on-surface-variant text-xs uppercase">
-                      Role
-                    </span>
-                    <span className="block font-headline font-medium">
-                      {isOrganizer ? "Organizer" : "Builder"}
-                    </span>
+                    <span className="block text-on-surface-variant text-xs uppercase">Role</span>
+                    <span className="block font-headline font-medium">{isOrganizer ? "Organizer" : "Builder"}</span>
                   </div>
                 </div>
                 <div className="pt-4 flex gap-4">
                   {!profileExists && (
-                    <span className="text-error text-sm">
-                      Create a profile first (below)
-                    </span>
+                    <span className="text-error text-sm">Create a profile first (below)</span>
                   )}
                   {profileExists && !hasJoined && (
                     <button
                       onClick={handleJoinHackathon}
                       disabled={isTxPending}
-                      className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-10 py-4 rounded-lg font-bold text-lg hover:shadow-[0_0_20px_rgba(163,50,255,0.3)] transition-all active:scale-95 disabled:opacity-50"
+                      className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-10 py-4 rounded-lg font-bold text-lg hover:shadow-[0_0_20px_rgba(163,50,255,0.3)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isTxPending ? "Joining..." : "Join Hackathon"}
+                      {isTxPending ? (
+                        <span className="flex items-center gap-2">
+                          <span className="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
+                          Joining...
+                        </span>
+                      ) : "Join Hackathon"}
                     </button>
                   )}
                   {hasJoined && (
                     <span className="text-secondary font-bold text-lg flex items-center gap-2">
-                      <span className="material-symbols-outlined">
-                        check_circle
-                      </span>
+                      <span className="material-symbols-outlined">check_circle</span>
                       You&apos;re in!
                     </span>
                   )}
@@ -261,141 +348,158 @@ export default function HackathonPage() {
               <div className="bg-surface-container p-8 rounded-xl relative overflow-hidden monad-pulse">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16" />
                 <div className="flex items-center gap-3 mb-8">
-                  <span className="material-symbols-outlined text-primary">
-                    person_add
-                  </span>
-                  <h2 className="text-2xl font-headline font-semibold text-on-surface">
-                    Create Profile
-                  </h2>
+                  <span className="material-symbols-outlined text-primary">person_add</span>
+                  <h2 className="text-2xl font-headline font-semibold text-on-surface">Create Profile</h2>
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                      Handle *
-                    </label>
-                    <input
-                      type="text"
-                      value={handle}
-                      onChange={(e) => setHandle(e.target.value)}
-                      placeholder="e.g. patrick"
-                      className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
-                    />
+                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">Handle *</label>
+                    <input type="text" value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="e.g. patrick"
+                      className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                      Display Name
-                    </label>
-                    <input
-                      type="text"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="Patrick Passos"
-                      className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
-                    />
+                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">Display Name</label>
+                    <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Patrick Passos"
+                      className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                      Bio
-                    </label>
-                    <textarea
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                      placeholder="Builder vibes..."
-                      rows={2}
-                      className="w-full bg-surface-container-lowest border-none text-on-surface p-4 rounded-md resize-none focus:ring-1 focus:ring-primary"
-                    />
+                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">Bio</label>
+                    <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Builder vibes..." rows={2}
+                      className="w-full bg-surface-container-lowest border-none text-on-surface p-4 rounded-md resize-none focus:ring-1 focus:ring-primary" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                        GitHub URL
-                      </label>
-                      <input
-                        type="text"
-                        value={githubUrl}
-                        onChange={(e) => setGithubUrl(e.target.value)}
-                        className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
-                      />
+                      <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">GitHub URL</label>
+                      <input type="text" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)}
+                        className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                        LinkedIn URL
-                      </label>
-                      <input
-                        type="text"
-                        value={linkedinUrl}
-                        onChange={(e) => setLinkedinUrl(e.target.value)}
-                        className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
-                      />
+                      <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">LinkedIn URL</label>
+                      <input type="text" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)}
+                        className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary" />
                     </div>
                   </div>
-                  <button
-                    onClick={handleCreateProfile}
-                    disabled={!handle || isTxPending}
-                    className="w-full bg-surface-bright text-on-surface font-headline font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <span className="material-symbols-outlined">
-                      person_add
-                    </span>
-                    {isTxPending ? "Creating..." : "Create Profile"}
+                  <button onClick={handleCreateProfile} disabled={!handle || isTxPending}
+                    className="w-full bg-surface-bright text-on-surface font-headline font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isTxPending ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-4 h-4 border-2 border-on-surface/30 border-t-on-surface rounded-full animate-spin" />
+                        Creating...
+                      </span>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined">person_add</span>
+                        Create Profile
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Attest Contribution (only if joined) */}
+            {/* Peer Attestation with Participant List */}
             {hasJoined && (
               <div className="bg-surface-container p-8 rounded-xl relative overflow-hidden monad-pulse">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl -mr-16 -mt-16" />
-                <div className="flex items-center gap-3 mb-8">
-                  <span className="material-symbols-outlined text-secondary">
-                    diversity_3
-                  </span>
-                  <h2 className="text-2xl font-headline font-semibold text-on-surface">
-                    Peer Attestation
-                  </h2>
-                </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                      Participant Address
-                    </label>
-                    <input
-                      type="text"
-                      value={attestTarget}
-                      onChange={(e) => setAttestTarget(e.target.value)}
-                      placeholder="0x..."
-                      className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
-                    />
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-secondary">diversity_3</span>
+                    <h2 className="text-2xl font-headline font-semibold text-on-surface">Peer Attestation</h2>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                      Category
-                    </label>
-                    <div className="grid grid-cols-5 gap-2">
-                      {CONTRIBUTION_CATEGORIES.map((cat, i) => (
-                        <button
-                          key={cat}
-                          onClick={() => setAttestCategory(i)}
-                          className={`p-3 rounded-md text-center text-xs font-bold font-label transition-all ${
-                            attestCategory === i
-                              ? "bg-primary/10 border border-primary text-primary"
-                              : "bg-surface-container-low border border-outline-variant/10 text-on-surface hover:border-primary/50"
-                          }`}
-                        >
-                          {cat}
-                        </button>
+                  <span className="text-sm text-on-surface-variant">
+                    {participants.filter((p) => p.address !== address).length} peers
+                  </span>
+                </div>
+
+                {/* Participant List */}
+                <div className="space-y-3 mb-6">
+                  {loadingParticipants ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="animate-pulse flex items-center gap-4 p-4 rounded-lg bg-surface-container-low">
+                          <div className="w-10 h-10 rounded-full bg-surface-container-highest" />
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-surface-container-highest rounded w-1/3" />
+                            <div className="h-3 bg-surface-container-highest rounded w-1/4" />
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  </div>
-                  <button
-                    onClick={handleAttest}
-                    disabled={!attestTarget || isTxPending}
-                    className="w-full bg-surface-bright text-on-surface font-headline font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <span className="material-symbols-outlined">verified</span>
-                    {isTxPending ? "Attesting..." : "Submit Attestation"}
-                  </button>
+                  ) : participants.filter((p) => p.address !== address).length === 0 ? (
+                    <div className="text-center py-8 text-on-surface-variant">
+                      <span className="material-symbols-outlined text-3xl mb-2 block">group_off</span>
+                      <p className="text-sm">No other participants yet. Share the hackathon link!</p>
+                    </div>
+                  ) : (
+                    participants
+                      .filter((p) => p.address !== address)
+                      .map((participant) => (
+                        <div key={participant.address}>
+                          <div className="flex items-center gap-4 p-4 rounded-lg bg-surface-container-low hover:bg-surface-container-high transition-colors">
+                            <div className="w-10 h-10 rounded-full overflow-hidden">
+                              <AddressAvatar address={participant.address} size={40} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-semibold text-on-surface truncate">
+                                {participant.displayName}
+                              </div>
+                              <div className="text-[0.7rem] text-on-surface-variant uppercase tracking-tighter">
+                                @{participant.handle}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setAttestTarget(participant.address);
+                                setShowCategoryFor(
+                                  showCategoryFor === participant.address ? null : participant.address
+                                );
+                              }}
+                              className="text-primary text-sm font-label font-bold tracking-widest hover:underline"
+                            >
+                              ATTEST
+                            </button>
+                          </div>
+
+                          {/* Category selector (inline) */}
+                          {showCategoryFor === participant.address && (
+                            <div className="mt-2 p-4 rounded-lg bg-surface-container-lowest space-y-3">
+                              <div className="grid grid-cols-5 gap-2">
+                                {CONTRIBUTION_CATEGORIES.map((cat, i) => (
+                                  <button
+                                    key={cat}
+                                    onClick={() => setAttestCategory(i)}
+                                    className={`p-2 rounded-md text-center text-[10px] font-bold font-label transition-all ${
+                                      attestCategory === i
+                                        ? "bg-primary/10 border border-primary text-primary"
+                                        : "bg-surface-container border border-outline-variant/10 text-on-surface hover:border-primary/50"
+                                    }`}
+                                  >
+                                    {cat}
+                                  </button>
+                                ))}
+                              </div>
+                              <button
+                                onClick={handleAttest}
+                                disabled={isTxPending}
+                                className="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold py-3 rounded-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {isTxPending ? (
+                                  <span className="flex items-center gap-2">
+                                    <span className="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
+                                    Attesting...
+                                  </span>
+                                ) : (
+                                  <>
+                                    <span className="material-symbols-outlined text-sm">verified</span>
+                                    Attest {CONTRIBUTION_CATEGORIES[attestCategory]}
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                  )}
                 </div>
               </div>
             )}
@@ -403,71 +507,79 @@ export default function HackathonPage() {
 
           {/* Right Column */}
           <aside className="lg:col-span-5 space-y-8">
-            {/* Organizer Award Panel (only for organizer) */}
+            {/* Organizer Award Panel */}
             {isOrganizer && (
               <div className="bg-surface-container p-8 rounded-xl relative overflow-hidden monad-pulse">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16" />
                 <div className="flex items-center gap-3 mb-8">
-                  <span className="material-symbols-outlined text-primary">
-                    military_tech
-                  </span>
-                  <h2 className="text-2xl font-headline font-semibold text-on-surface">
-                    Mark Award
-                  </h2>
+                  <span className="material-symbols-outlined text-primary">military_tech</span>
+                  <h2 className="text-2xl font-headline font-semibold text-on-surface">Mark Award</h2>
                 </div>
                 <div className="space-y-4">
+                  {/* Participant selector for awards */}
                   <div className="space-y-2">
                     <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                      Builder Address
+                      Select Builder
                     </label>
-                    <input
-                      type="text"
-                      value={awardTarget}
-                      onChange={(e) => setAwardTarget(e.target.value)}
-                      placeholder="0x..."
-                      className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
-                    />
+                    {participants.length > 0 ? (
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {participants.map((p) => (
+                          <button
+                            key={p.address}
+                            onClick={() => setAwardTarget(p.address)}
+                            className={`w-full flex items-center gap-3 p-3 rounded-md text-left transition-all ${
+                              awardTarget === p.address
+                                ? "bg-primary/10 border border-primary"
+                                : "bg-surface-container-low border border-outline-variant/10 hover:border-primary/50"
+                            }`}
+                          >
+                            <div className="w-8 h-8 rounded-full overflow-hidden">
+                              <AddressAvatar address={p.address} size={32} />
+                            </div>
+                            <div>
+                              <div className="text-sm font-semibold">{p.displayName}</div>
+                              <div className="text-[10px] text-on-surface-variant">@{p.handle}</div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <input type="text" value={awardTarget} onChange={(e) => setAwardTarget(e.target.value)} placeholder="0x..."
+                        className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary" />
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
-                      Award Type
-                    </label>
+                    <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">Award Type</label>
                     <div className="grid grid-cols-2 gap-3">
                       {AWARD_TYPES.slice(1).map((award, i) => (
                         <label key={award} className="cursor-pointer group">
-                          <input
-                            type="radio"
-                            name="award"
-                            className="hidden peer"
-                            checked={awardType === i + 1}
-                            onChange={() => setAwardType(i + 1)}
-                          />
+                          <input type="radio" name="award" className="hidden peer"
+                            checked={awardType === i + 1} onChange={() => setAwardType(i + 1)} />
                           <div className="bg-surface-container-low border border-outline-variant/10 p-4 rounded-md text-center group-hover:border-primary/50 transition-all peer-checked:bg-primary/10 peer-checked:border-primary">
                             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2">
-                              <span
-                                className="material-symbols-outlined text-primary"
-                                style={{
-                                  fontVariationSettings: "'FILL' 1",
-                                }}
-                              >
+                              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
                                 workspace_premium
                               </span>
                             </div>
-                            <span className="text-xs font-bold font-label text-on-surface block">
-                              {award}
-                            </span>
+                            <span className="text-xs font-bold font-label text-on-surface block">{award}</span>
                           </div>
                         </label>
                       ))}
                     </div>
                   </div>
-                  <button
-                    onClick={handleAward}
-                    disabled={!awardTarget || isTxPending}
-                    className="w-full bg-surface-bright text-on-surface font-headline font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <span className="material-symbols-outlined">verified</span>
-                    {isTxPending ? "Assigning..." : "Confirm and Sign Award"}
+                  <button onClick={handleAward} disabled={!awardTarget || isTxPending}
+                    className="w-full bg-surface-bright text-on-surface font-headline font-bold py-4 rounded-md hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isTxPending ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-4 h-4 border-2 border-on-surface/30 border-t-on-surface rounded-full animate-spin" />
+                        Assigning...
+                      </span>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined">verified</span>
+                        Confirm and Sign Award
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -503,19 +615,12 @@ export default function HackathonPage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-secondary-container to-transparent opacity-50" />
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 rounded-full bg-secondary-container/10 flex items-center justify-center mb-6 relative">
-                <span
-                  className="material-symbols-outlined text-4xl text-secondary-container"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
+                <span className="material-symbols-outlined text-4xl text-secondary-container" style={{ fontVariationSettings: "'FILL' 1" }}>
                   check_circle
                 </span>
               </div>
-              <h3 className="text-3xl font-headline font-bold text-on-surface mb-2">
-                {successMessage}
-              </h3>
-              <p className="text-on-surface-variant mb-8 text-sm leading-relaxed">
-                Transaction confirmed onchain.
-              </p>
+              <h3 className="text-3xl font-headline font-bold text-on-surface mb-2">{successMessage}</h3>
+              <p className="text-on-surface-variant mb-8 text-sm leading-relaxed">Transaction confirmed onchain.</p>
               {txHash && (
                 <div className="w-full bg-surface-container-lowest p-4 rounded-lg mb-8 text-left font-mono text-[0.7rem] text-secondary-container/80 space-y-1">
                   <div>TX: {txHash.slice(0, 10)}...{txHash.slice(-8)}</div>
@@ -523,15 +628,23 @@ export default function HackathonPage() {
                 </div>
               )}
               <button
-                onClick={() => {
-                  setShowSuccess(false);
-                  window.location.reload();
-                }}
+                onClick={() => { setShowSuccess(false); window.location.reload(); }}
                 className="w-full py-3 bg-surface-variant text-on-surface rounded-md font-headline font-bold hover:bg-surface-bright transition-colors"
               >
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Toast */}
+      {error && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] max-w-lg w-full px-4">
+          <div className="bg-error-container text-on-error-container p-4 rounded-xl shadow-2xl flex items-center gap-3">
+            <span className="material-symbols-outlined">error</span>
+            <p className="text-sm flex-1">{error}</p>
+            <button onClick={() => setError("")} className="material-symbols-outlined text-sm opacity-60 hover:opacity-100">close</button>
           </div>
         </div>
       )}

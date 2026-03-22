@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useReadContract } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { type Address } from "viem";
 import {
   CONTRACT_ADDRESS,
@@ -10,10 +15,42 @@ import {
   CONTRIBUTION_CATEGORIES,
   AWARD_TYPES,
 } from "@/lib/contract";
+import { AddressAvatar } from "@/components/AddressAvatar";
 
 export default function PassportPage() {
   const { address: rawAddress } = useParams<{ address: string }>();
   const userAddress = rawAddress as Address;
+  const { address: connectedAddress } = useAccount();
+  const isOwnProfile =
+    connectedAddress?.toLowerCase() === userAddress?.toLowerCase();
+
+  // Profile creation state
+  const [handle, setHandle] = useState("");
+  const [displayNameInput, setDisplayNameInput] = useState("");
+  const [bioInput, setBioInput] = useState("");
+  const [githubUrlInput, setGithubUrlInput] = useState("");
+  const [linkedinUrlInput, setLinkedinUrlInput] = useState("");
+
+  const { writeContract, data: txHash } = useWriteContract();
+  const { isLoading: isTxPending } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
+
+  function handleCreateProfile() {
+    writeContract(
+      {
+        address: CONTRACT_ADDRESS,
+        abi: CONTRACT_ABI,
+        functionName: "createProfile",
+        args: [handle, displayNameInput, bioInput, githubUrlInput, linkedinUrlInput],
+      },
+      {
+        onSuccess: () => {
+          window.location.reload();
+        },
+      }
+    );
+  }
 
   const { data: profile } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -83,6 +120,109 @@ export default function PassportPage() {
   }, [p?.exists, totalAttestations, awardIndex]);
 
   if (!p?.exists) {
+    // Own address with no profile → show create form
+    if (isOwnProfile) {
+      return (
+        <div className="pt-8 pb-20 px-6 max-w-2xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="w-28 h-28 mx-auto mb-6 rounded-xl overflow-hidden ring-2 ring-primary/20">
+              <AddressAvatar address={userAddress} size={112} />
+            </div>
+            <span className="font-label text-xs font-bold text-primary tracking-[0.2em] uppercase">
+              Create Your Passport
+            </span>
+            <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tighter mt-2">
+              Welcome, Builder
+            </h1>
+            <p className="text-on-surface-variant mt-3 max-w-md mx-auto">
+              Set up your onchain identity. This profile lives on Monad — no one can take it away.
+            </p>
+          </div>
+
+          <div className="bg-surface-container p-8 rounded-xl space-y-5 monad-pulse">
+            <div className="space-y-2">
+              <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
+                Handle *
+              </label>
+              <input
+                type="text"
+                value={handle}
+                onChange={(e) => setHandle(e.target.value)}
+                placeholder="e.g. patrick"
+                className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
+                Display Name
+              </label>
+              <input
+                type="text"
+                value={displayNameInput}
+                onChange={(e) => setDisplayNameInput(e.target.value)}
+                placeholder="Patrick Passos"
+                className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
+                Bio
+              </label>
+              <textarea
+                value={bioInput}
+                onChange={(e) => setBioInput(e.target.value)}
+                placeholder="Builder vibes..."
+                rows={2}
+                className="w-full bg-surface-container-lowest border-none text-on-surface p-4 rounded-md resize-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
+                  GitHub URL
+                </label>
+                <input
+                  type="text"
+                  value={githubUrlInput}
+                  onChange={(e) => setGithubUrlInput(e.target.value)}
+                  className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[0.6875rem] uppercase tracking-widest text-on-surface-variant font-label">
+                  LinkedIn URL
+                </label>
+                <input
+                  type="text"
+                  value={linkedinUrlInput}
+                  onChange={(e) => setLinkedinUrlInput(e.target.value)}
+                  className="w-full bg-surface-container-lowest border-none text-on-surface py-4 px-4 rounded-md focus:ring-1 focus:ring-primary"
+                />
+              </div>
+            </div>
+            <button
+              onClick={handleCreateProfile}
+              disabled={!handle || isTxPending}
+              className="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold py-4 rounded-md hover:shadow-[0_0_20px_rgba(163,50,255,0.3)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTxPending ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
+                  Creating...
+                </span>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined">person_add</span>
+                  Create Builder Passport
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Someone else's address with no profile
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -110,9 +250,7 @@ export default function PassportPage() {
         <div className="flex flex-col md:flex-row gap-8 items-start md:items-end">
           <div className="relative group">
             <div className="w-32 h-32 md:w-44 md:h-44 rounded-xl overflow-hidden bg-surface-container-high ring-2 ring-primary/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-7xl">
-                fingerprint
-              </span>
+              <AddressAvatar address={userAddress} size={176} />
             </div>
             {awardIndex > 0 && (
               <div className="absolute -bottom-2 -right-2 bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">

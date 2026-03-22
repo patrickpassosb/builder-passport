@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAccount, useConnect } from "wagmi";
 import { useRouter } from "next/navigation";
+import { AddressAvatar } from "@/components/AddressAvatar";
 
 export default function LandingPage() {
   const { isConnected } = useAccount();
@@ -64,10 +65,8 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
               <div className="relative z-10 space-y-6">
                 <div className="flex items-center gap-4 border-b border-outline-variant/10 pb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-surface-container-highest flex items-center justify-center border border-outline-variant/20">
-                    <span className="material-symbols-outlined text-primary text-3xl">
-                      fingerprint
-                    </span>
+                  <div className="w-16 h-16 rounded-2xl bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+                    <AddressAvatar address="0x71C7656EC7ab88b098defB751B7401B5f6d8976F" size={64} />
                   </div>
                   <div>
                     <h3 className="font-headline font-bold text-xl">
