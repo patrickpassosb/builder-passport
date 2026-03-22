@@ -8,7 +8,7 @@
 
 **Formato da apresentação:**
 - **Demo ao vivo:** 3 minutos máximo, apresentando solo (falando + navegando na tela)
-- **Vídeo demo:** ~3 minutos, pré-gravado com Google AntiGravity + ElevenLabs para narração AI
+- **Vídeo demo (tweet):** 90 segundos, pré-gravado com Google AntiGravity + ElevenLabs para narração AI
 - **Idioma da demo ao vivo:** Português
 - **Idioma do vídeo (narração):** English
 
@@ -262,63 +262,89 @@ Faça isso **30 minutos antes** da apresentação:
 
 ---
 
-## 6. Demo Video (~3 min, for X/submission)
+## 6. Submission Form
+
+### Fields to Fill
+
+| Field | Value |
+|-------|-------|
+| **Project Image** | Screenshot of the passport page showing profile with Winner badge, attestations, and hackathon history |
+| **Project Title** | Builder Passport |
+| **Category** | Social / Identity |
+| **Description** | See below |
+| **Tweet URL** | Post the 90-second video as a tweet tagging @monad_dev, paste the tweet URL |
+| **GitHub URL** | `https://github.com/patrickpassosb/builder-passport` |
+| **Demo URL** | `https://builder-passport-xi.vercel.app/` |
+
+### Description (copy-paste this)
+
+> Builder Passport is an onchain reputation layer for hackathons, deployed on Monad Testnet. It turns hackathon achievements into portable, verifiable credentials. Builders create profiles, join hackathons, receive peer attestations across 5 categories (Technical, Product, Pitch, Helpful, Teamwork), and earn organizer awards. Reputation compounds across hackathons — your credibility follows you. Features include AI-generated summaries from onchain data, a cross-platform claims system with peer verification, a builder leaderboard ranked by reputation score, and social sharing. Two smart contracts, no tokens, pure reputation data. DevPost stores projects. Builder Passport stores builder credibility.
+
+---
+
+## 7. Demo Tweet Video (90 seconds)
+
+**Requirements:** 90-second screen recording with voice-over, posted as a tweet tagging @monad_dev. Include link to app and GitHub repo in the tweet.
 
 Record with Google AntiGravity for screen capture + ElevenLabs for English AI narration.
 
 **App URL for recording:** `https://builder-passport-xi.vercel.app/`
 
-### Full Video Script with English Narration
+### Tweet Text (copy-paste this)
 
-**[0:00–0:20] PROBLEM + LANDING PAGE**
-
-*Screen: Open landing page at `https://builder-passport-xi.vercel.app/`. Slow scroll showing the hero and live stats.*
-
-Narration:
-> "Every time you participate in a hackathon, your achievements become a social media post and then disappear. Your reputation as a builder resets to zero at the next event. Builder Passport changes that. It's an onchain reputation layer for hackathons, deployed on Monad. These numbers are live from the blockchain."
-
-**[0:20–0:50] HACKATHON + ATTESTATION**
-
-*Screen: Navigate to `https://builder-passport-xi.vercel.app/hackathon/2`. Show the participant list. Click ATTEST on a participant. Select a category. Confirm in MetaMask. Show the transaction confirming.*
-
-Narration:
-> "Every hackathon is registered onchain. Here's Monad Blitz Sao Paulo with its participants. Any builder can attest a peer across five categories: Technical, Product, Pitch, Helpful, and Teamwork. One click, confirm in MetaMask, and the attestation is permanent. Under one second on Monad. This is not self-reported — your peers vouch for you onchain."
-
-**[0:50–1:50] PASSPORT — FULL SHOWCASE**
-
-*Screen: Navigate to Patrick's passport page. Slow scroll through each section: header with Winner badge, stats, AI summary, hackathon history cards, external claims.*
-
-Narration:
-> "And this is the result: a Builder Passport. Patrick Passos — three hackathons, Winner at Monad Blitz Berlin, Best Technical Solution in Sao Paulo. Fourteen peer attestations across five categories."
+> Builder Passport — an onchain reputation layer for hackathons, built on @monad_dev
 >
-> "An AI generates a professional summary from the onchain data. Not self-written. This is what the blockchain says about you as a builder."
+> Your hackathon wins shouldn't die as LinkedIn posts. They should become permanent, verifiable credentials.
 >
-> "The full history shows each hackathon individually — which categories your peers recognized you in and which award you received. This is portable. It follows you to the next hackathon, the next DAO, any protocol that wants to verify builder credibility."
+> Live: https://builder-passport-xi.vercel.app/
+> Code: https://github.com/patrickpassosb/builder-passport
+>
+> #MonadBlitz
 
-**[1:50–2:15] EXTERNAL CLAIMS + VERIFICATION**
+### 90-Second Video Script with English Narration
 
-*Screen: Show the External Achievements section. Click "Add Past Achievement". Fill the form. Show a claim with verifications.*
+**[0:00–0:15] PROBLEM + LANDING PAGE**
 
-Narration:
-> "Builders can also import achievements from other platforms — DevPost, ETHGlobal, anywhere. Create a claim with the hackathon name, the result, and a proof link. Other builders verify that claim onchain. Here we see two claims with two verifications each — cross-platform reputation, peer-verified."
-
-**[2:15–2:35] LEADERBOARD + SHARE**
-
-*Screen: Navigate to `https://builder-passport-xi.vercel.app/builders`. Show the ranked list. Click Share on the passport, show the modal.*
+*Screen: Open `https://builder-passport-xi.vercel.app/`. Show the hero, scroll to live stats.*
 
 Narration:
-> "The leaderboard ranks all builders by reputation score — attestations, awards, and verified claims all contribute to the ranking. And with one click, any builder can share their passport on X, Telegram, WhatsApp, LinkedIn, or email."
+> "Every hackathon you participate in, your achievements become a social media post and disappear. Builder Passport changes that. It's an onchain reputation layer for hackathons, deployed on Monad. These stats are live from the blockchain."
 
-**[2:35–2:50] CLOSING**
+**[0:15–0:30] HACKATHON + ATTESTATION**
 
-*Screen: Return to Patrick's passport page. Slow zoom on the header.*
+*Screen: Navigate to `https://builder-passport-xi.vercel.app/hackathon/5`. Show participants. Click ATTEST, select Technical, confirm in MetaMask.*
 
 Narration:
-> "DevPost stores projects. Builder Passport stores builder credibility. Every hackathon you attend, every peer who recognizes you, every award you earn — it all compounds. It's portable. It's verifiable. It's yours. Forever."
+> "Each hackathon is registered onchain. Participants attest their peers across five categories. One click, under a second on Monad. Permanent. Not self-reported — your peers vouch for you."
+
+**[0:30–1:05] PASSPORT — THE SHOWCASE**
+
+*Screen: Navigate to Patrick's passport. Slow scroll: header with Winner badge, stats, AI summary, hackathon history cards.*
+
+Narration:
+> "This is a Builder Passport. Three hackathons. Winner at Monad Blitz Berlin. Best Technical Solution in Sao Paulo. Fourteen peer attestations across five categories."
+>
+> "An AI generates a professional summary from the onchain data. Not self-written. This is what the blockchain says about you."
+>
+> "The full history is portable — it follows you to the next hackathon, the next DAO, any dApp that wants to verify builder credibility."
+
+**[1:05–1:20] CLAIMS + LEADERBOARD**
+
+*Screen: Show external achievements with verifications. Quick cut to `/builders` leaderboard.*
+
+Narration:
+> "Builders import past achievements from other platforms, verified by peers onchain. The leaderboard ranks everyone by reputation score. All composable — any smart contract can read this data."
+
+**[1:20–1:30] CLOSING**
+
+*Screen: Return to passport page. Slow zoom on header.*
+
+Narration:
+> "DevPost stores projects. Builder Passport stores builder credibility. It compounds. It's portable. It's yours. Forever."
 
 ---
 
-## 7. Timeline do Dia do Evento
+## 8. Timeline do Dia do Evento
 
 | Horário | Ação |
 |---------|------|
@@ -342,7 +368,7 @@ Narration:
 
 ---
 
-## 8. Estratégia para Ganhar
+## 9. Estratégia para Ganhar
 
 ### Por que os Participantes Vão Votar Neste Projeto
 
@@ -385,7 +411,7 @@ Escolha uma e fale com uma pausa antes e depois:
 
 ---
 
-## 9. Checklist Final de Verificação
+## 10. Checklist Final de Verificação
 
 ### Código
 - [ ] `forge build` passa sem erros
@@ -411,7 +437,10 @@ Escolha uma e fale com uma pausa antes e depois:
 - [ ] QR code gerado e impresso/salvo no celular
 - [ ] **Roteiro praticado pelo menos 3 vezes com cronômetro**
 
-### Vídeo
-- [ ] Vídeo demo gravado (~3 min)
-- [ ] Narração gerada via ElevenLabs
-- [ ] Vídeo testado e pronto para submissão
+### Vídeo + Submissão
+- [ ] Vídeo demo gravado (90 segundos)
+- [ ] Narração em inglês gerada via ElevenLabs
+- [ ] Tweet postado com vídeo, tagging @monad_dev, links do app e GitHub
+- [ ] Tweet URL copiada para o formulário de submissão
+- [ ] Screenshot do passaporte salva como project image
+- [ ] Formulário de submissão preenchido e enviado
