@@ -4,11 +4,17 @@ import Link from "next/link";
 import { useAccount, useConnect } from "wagmi";
 import { useRouter } from "next/navigation";
 import { AddressAvatar } from "@/components/AddressAvatar";
+import { useState, useEffect } from "react";
 
 export default function LandingPage() {
   const { isConnected } = useAccount();
-  const { connect, connectors } = useConnect();
+  const { connect, connectors, isPending } = useConnect();
   const router = useRouter();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -35,7 +41,7 @@ export default function LandingPage() {
               reputation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              {isConnected ? (
+              {mounted && isConnected ? (
                 <button
                   onClick={() => router.push("/hackathon/0")}
                   className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-[0_0_30px_rgba(163,50,255,0.3)] transition-all"
@@ -45,9 +51,11 @@ export default function LandingPage() {
               ) : (
                 <button
                   onClick={() => connect({ connector: connectors[0] })}
-                  className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-[0_0_30px_rgba(163,50,255,0.3)] transition-all"
+                  disabled={isPending}
+                  className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-[0_0_30px_rgba(163,50,255,0.3)] transition-all flex items-center justify-center gap-3 disabled:opacity-70"
                 >
-                  Get Started
+                  {isPending && <div className="spinner !w-5 !h-5 border-[2.5px]" />}
+                  {isPending ? "Connecting..." : "Get Started"}
                 </button>
               )}
               <Link
@@ -78,13 +86,13 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-surface-container-lowest/50 p-4 rounded-xl border border-outline-variant/5">
+                  <div className="bg-surface-container-lowest/50 p-4 rounded-xl border border-outline-variant/5" role="status" aria-label="12 attestations received">
                     <p className="text-[10px] text-on-surface-variant uppercase mb-1">
                       Attestations
                     </p>
                     <p className="font-headline font-bold text-primary">12</p>
                   </div>
-                  <div className="bg-surface-container-lowest/50 p-4 rounded-xl border border-outline-variant/5">
+                  <div className="bg-surface-container-lowest/50 p-4 rounded-xl border border-outline-variant/5" role="status" aria-label="Winner award received">
                     <p className="text-[10px] text-on-surface-variant uppercase mb-1">
                       Awards
                     </p>
@@ -94,7 +102,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden" role="progressbar" aria-valuenow={78} aria-valuemin={0} aria-valuemax={100}>
                     <div className="h-full w-[78%] bg-gradient-to-r from-primary to-secondary" />
                   </div>
                   <div className="flex justify-between text-[10px] font-label text-on-surface-variant">
@@ -221,7 +229,7 @@ export default function LandingPage() {
               Connect your wallet and create your Builder Passport. Start
               building your hackathon legacy.
             </p>
-            {isConnected ? (
+            {mounted && isConnected ? (
               <button
                 onClick={() => router.push("/hackathon/0")}
                 className="bg-primary text-on-primary px-10 py-5 rounded-xl font-bold text-xl hover:scale-105 transition-transform"
@@ -231,9 +239,11 @@ export default function LandingPage() {
             ) : (
               <button
                 onClick={() => connect({ connector: connectors[0] })}
-                className="bg-primary text-on-primary px-10 py-5 rounded-xl font-bold text-xl hover:scale-105 transition-transform"
+                disabled={isPending}
+                className="bg-primary text-on-primary px-10 py-5 rounded-xl font-bold text-xl hover:scale-105 transition-transform flex items-center justify-center gap-4 w-full max-w-sm mx-auto disabled:opacity-70 disabled:hover:scale-100"
               >
-                Create Your Passport
+                {isPending && <div className="spinner !w-6 !h-6 border-[3px]" />}
+                {isPending ? "Connecting..." : "Create Your Passport"}
               </button>
             )}
           </div>

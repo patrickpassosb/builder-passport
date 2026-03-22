@@ -30,10 +30,13 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="selection:bg-primary-container selection:text-on-primary-container">
+      <body
+        className="selection:bg-primary-container selection:text-on-primary-container"
+        suppressHydrationWarning
+      >
         <Providers>
           <Navbar />
-          <main className="pt-16 min-h-screen">{children}</main>
+          <main className="pt-24 min-h-screen">{children}</main>
           <Footer />
         </Providers>
       </body>
